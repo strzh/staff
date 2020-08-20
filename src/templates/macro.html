@@ -1,0 +1,28 @@
+{% macro table(dataset,heads) -%}
+<script src="{{ url_for('static', filename='jquery/jquery.dataTables.min.js') }}"></script>
+<script src="{{ url_for('static', filename='jquery/dataTables.bootstrap4.min.js') }}"></script>
+<table id="datalist" class="display" width="100%">
+<thead>
+<tr>
+{% for h in heads %}
+<th>{{ h }}</th>
+{% endfor %}
+</tr>
+</thead>
+</table>
+<script>
+$(document).ready(function() {
+        data={{ dataset|tojson }};
+        $('#datalist').DataTable({data: data});
+} );
+
+</script>
+{%- endmacro %}
+
+{% macro list(data) -%}
+<table class="table">
+{% for k in data %}
+<tr><th>{{ k.decode()|safe }}</th><td>{{ data[k].decode()|safe|e }}</td></tr>
+{% endfor %}
+</table>
+{%- endmacro %}

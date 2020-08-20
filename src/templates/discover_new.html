@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+{% block main %}
+<main role="main" class="col-md-9 col-lg-10 px-4 bg-light" >
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+        <h1 class="h3" style="color:#0298DB!important;">
+        <div style="padding-top:6px;">Discover a new server</div>
+        </h1>
+    </div>
+    <div>
+    </div>
+    <form role="form" method="post">
+    <div class="row">
+       <div class="form-group col-xs-4">
+         <input class="form-control input-normal" id="ip_txt" type="text" placeholder="ip address" aria-label="ips" name="ips" value={{host}}>
+       </div>
+    </div>
+    <div class="row">
+       <div class="form-group col-xs-4">
+         <input class="form-control input-normal" id="user_txt" type="text" placeholder="admin user" aria-label="admin" name="user" value={{user}}>
+       </div>
+    </div>
+    <div class="row">
+       <div class="form-group col-xs-4">
+         <input class="form-control input-normal" id="password_txt" type="password" placeholder="password" aria-label="password" name="password" >
+       </div>
+    </div>
+    <div class="row">
+       <div class="form-group col-xs-4">
+         <select class="form-control" id="sel1" name="keytype" ><option>password</option><option>RSA</option><option>DSS</option><option>Ed25519Key</option><option>ECDSAKey</option></select>
+       </div>
+    </div>
+    <div class="row">
+        <textarea class="form-control w-50" type="password" id="file_conent" type="text" name="sshkey" rows=10> {{data}}</textarea>
+       <div class="form-group col-xs-4">
+         <button class="btn btn-outline-primary" style="margin-left:10px;" id="search_btn" placeholder="ssh keys"><i class="fa fa-search"></i></button>
+       </div>
+    </div>
+    </form>
+</main>
+{% endblock %}

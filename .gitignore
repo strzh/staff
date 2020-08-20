@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+secret.yaml
+configuration.yaml
+syncgmp.log
+build
+dist
+gmpimpactanlysis.egg-info

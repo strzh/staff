@@ -1,0 +1,33 @@
+{% extends "head.html" %}
+{% block body %}
+<nav class="navbar navbar-expand navbar-dark bg-dark">
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/">
+              Dashboard 
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/device">
+              Devices
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/template">
+              Templates
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/discover">
+              discover
+            </a>
+          </li>
+        </ul>
+      </div>
+</nav>
+<div>
+  {% block main %}
+  {% endblock %}
+</div>
+{% endblock %}

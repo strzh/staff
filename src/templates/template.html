@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+{% block main %}
+<main role="main" class="col-md-9 col-lg-10 px-4">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 ">
+    </div>
+    <div>
+    {%- if editable -%}
+    <form role="form" method="post">
+    <div class="row">
+       <div class="form-group col-xs-4">
+          filename
+       </div>
+    </div>
+    <div class="row">
+         <input class="form-control input-normal" id="ip_txt" type="text" placeholder="ip address" aria-label="ips" name="ips" value={{ redis.hget(key,"name").decode() }}>
+    </div>
+    <div class="row">
+       <div class="form-group col-xs-4">
+          content
+       </div>
+    </div>
+    <div class="row">
+           <textarea class="form-control w-100" id="file_content" type="text" name="content" rows=10> {{  redis.hget(key,"file").decode() }}</textarea>
+    </div>
+    <div class="row">
+       <div class="form-group col-xs-4">
+         <button class="btn btn-outline-primary" id="search_btn"><i class="fa fa-search"></i></button>
+       </div>
+    </div>
+    </form>
+    {% else %}
+    <div class="row">
+       <div class="col"> filename </div>
+    </div>
+    <div class="row">
+       <div class="col">
+           <pre class="code bg-light">{{ redis.hget(key,"name").decode() }}</pre>
+       </div>
+    </div>
+    <div class="row">
+       <div class="col">
+           <pre class="code bg-light">Content</pre>
+       </div>
+    </div>
+    <div class="row">
+       <div class="col">
+           <pre class="code bg-light">{{ redis.hget(key,"file").decode() }}</pre>
+       </div>
+    </div>
+    {% endif %}
+    </div>
+</main>
+{% endblock %}
