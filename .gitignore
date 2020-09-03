@@ -6,3 +6,4 @@ syncgmp.log
 build
 dist
 gmpimpactanlysis.egg-info
+src/staff.yaml

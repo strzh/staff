@@ -1,25 +1,31 @@
 from flask import render_template,current_app,request
 from flask.views import MethodView,View
-import db
 import json
+from db import Device, File
+from app import db
 class devices(View):
     def dispatch_request(self):
-        redis = db.connect()
-        heads = ["name","OS","ARCH","IP"]
+        heads = ["ID","name","OS","ARCH","IP",""]
         ary = []
-        devices = redis.smembers("devices")
+        devices = Device.query.all()
         for i in devices:
-            ary.append(["<a href='"+i.decode()+"'>"+i.decode()+"</a>",redis.hget(i,"os"),redis.hget(i,"arch"),redis.hget(i,"ipaddr")])
+            ary.append([i.id,"<a href='"+str(i.id)+"'>"+i.name+"</a>",i.os,i.arch,i.ipaddr,i.id])
         return render_template("main.html",dataset=ary,heads=heads)
 class device(MethodView):
     def get(self, id):
-        redis = db.connect()
-        device = redis.hgetall(id)
-        del(device[b"password"])
-        del(device[b"key"])
-        ts = redis.hvals(device[b'process'])
-        current_app.logger.debug(ts)
-        device[b'process'] = b" ".join( b"<a href='/template/"+i+b"'>"+i+b"</a>" for i in ts)
-        return render_template("device.html",data=device)
+        device = Device.query.filter_by(id=id).first()
+        del(device.password)
+        del(device.keycode)
+        del(device._sa_instance_state)
+        return render_template("device.html",data=device.__dict__)
     def post(self):
         return render_template("main.html")
+    def delete(self, id):
+        device = Device.query.filter_by(id=id).first()
+        temp = File.query.filter_by(machine_id=id).first()
+        if temp is None:
+            db.session.delete(device)
+            db.session.commit()
+            return device.name
+        else:
+            return "failed"

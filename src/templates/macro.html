@@ -1,4 +1,4 @@
-{% macro table(dataset,heads) -%}
+{% macro table(dataset,heads,tags) -%}
 <script src="{{ url_for('static', filename='jquery/jquery.dataTables.min.js') }}"></script>
 <script src="{{ url_for('static', filename='jquery/dataTables.bootstrap4.min.js') }}"></script>
 <table id="datalist" class="display" width="100%">
@@ -13,8 +13,41 @@
 <script>
 $(document).ready(function() {
         data={{ dataset|tojson }};
-        $('#datalist').DataTable({data: data});
-} );
+        var table = $('#datalist').DataTable({
+		data: data,
+		"columnDefs": [ {
+			"targets": [ 0 ],
+			"visible": false
+		},{
+			"targets": -1,
+			"data": null,
+			"defaultContent": "<button class='btn btn-light btn-info'><i class='fa fa-info'></i></button>{%- if tags == 'sync' -%}<button class='btn btn-light btn-sync'><i class='fa fa-sync'></i></button><button class='btn btn-light btn-discover'><i class='fa fa-file-import'></i></button>{%- endif -%}{%- if tags == 'edit' -%}<button class='btn btn-light btn-edit'><i class='fa fa-pen'></i></button>{%- endif-%}"
+		} ],
+		buttons:[{
+			extender: 'remove'
+		}]
+	});
+	$('#datalist tbody').on( 'click', '.btn-info', function () {
+		var data = table.row( $(this).parents('tr')).data();
+                window.open(data[0],'_self');
+	});
+{%- if tags == 'sync' -%}
+	$('#datalist tbody').on( 'click', '.btn-sync', function () {
+		var data = table.row( $(this).parents('tr')).data();
+		$.ajax({url:"/discover/dev/"+data[0], success: function(e){alert(data[0]+" is "+e)}})
+	});
+	$('#datalist tbody').on( 'click', '.btn-discover', function () {
+		var data = table.row( $(this).parents('tr')).data();
+		window.open("/discover?serverid="+data[0],'_self');
+	});
+{%- endif -%}
+{%- if tags == 'edit' -%}
+	$('#datalist tbody').on( 'click', '.btn-edit', function () {
+		var data = table.row( $(this).parents('tr')).data();
+		window.open(data[0]+"?editable=True",'_self');
+	});
+{%- endif -%}
+});
 
 </script>
 {%- endmacro %}
@@ -22,7 +55,7 @@ $(document).ready(function() {
 {% macro list(data) -%}
 <table class="table">
 {% for k in data %}
-<tr><th>{{ k.decode()|safe }}</th><td>{{ data[k].decode()|safe|e }}</td></tr>
+<tr><th>{{ k|safe }}</th><td>{{ data[k]|safe|e }}</td></tr>
 {% endfor %}
 </table>
 {%- endmacro %}

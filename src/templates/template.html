@@ -7,44 +7,89 @@
     {%- if editable -%}
     <form role="form" method="post">
     <div class="row">
-       <div class="form-group col-xs-4">
-          filename
+       <div class="col">
+	   filename
+	   <pre class="code bg-light"><input class="form-control input-normal" type='input' name='path' value='{{ fileobj.path }}'></pre>
        </div>
     </div>
     <div class="row">
-         <input class="form-control input-normal" id="ip_txt" type="text" placeholder="ip address" aria-label="ips" name="ips" value={{ redis.hget(key,"name").decode() }}>
+       <div class="col"> owner </div>
+       <div class="col"> group </div>
+       <div class="col"> mode </div>
+       <div class="col"> Type </div>
+       <div class="col"> Server </div>
     </div>
     <div class="row">
-       <div class="form-group col-xs-4">
-          content
-       </div>
+       <div class="col"><pre class="code bg-light"><input class="form-control input-normal" type='input' name='owner' value='{{ fileobj.owner }}'></pre></div>
+       <div class="col"><pre class="code bg-light"><input class="form-control input-normal" type='input' name='group' value='{{ fileobj.group }}'></pre></div>
+       <div class="col"><pre class="code bg-light"><input class="form-control input-normal" type='input' name='mode' value='{{ fileobj.mode }}'></pre></div>
+       <div class="col"><pre class="code bg-light form-control">{{ fileobj.type }}</pre></div>
+       <div class="col"><pre class="code bg-light form-control">{{ fileobj.hostname }}</pre></div>
     </div>
     <div class="row">
-           <textarea class="form-control w-100" id="file_content" type="text" name="content" rows=10> {{  redis.hget(key,"file").decode() }}</textarea>
+	    <div class ="col">Precommand</div>
     </div>
     <div class="row">
-       <div class="form-group col-xs-4">
-         <button class="btn btn-outline-primary" id="search_btn"><i class="fa fa-search"></i></button>
+	    <div class ="col">
+	    <textarea class="form-control" id="file_conent" type="text" name="precmd" rows=2>{{ fileobj.precmd }}</textarea>
+ 	    </div>
+    </div>
+    <div class="row">
+	    <div class ="col">Postcommand</div>
+    </div>
+    <div class="row">
+	    <div class ="col">
+		    <textarea class="form-control" type="text" name="postcmd" rows=2>{{ fileobj.postcmd }}</textarea>
+	    </div>
+    </div>
+    <div class="row">
+	    <div class ="col">Content</div>
+    </div>
+    <div class="row">
+       <div class="col">
+	       <textarea class="form-control" type="text" name="text" rows=10>{{ fileobj.text }}</textarea>
        </div>
     </div>
     </form>
     {% else %}
     <div class="row">
-       <div class="col"> filename </div>
-    </div>
-    <div class="row">
        <div class="col">
-           <pre class="code bg-light">{{ redis.hget(key,"name").decode() }}</pre>
+	   filename
+           <pre class="code bg-light">{{ fileobj.path }}</pre>
        </div>
     </div>
     <div class="row">
-       <div class="col">
-           <pre class="code bg-light">Content</pre>
-       </div>
+       <div class="col"> owner </div>
+       <div class="col"> group </div>
+       <div class="col"> mode </div>
+       <div class="col"> Type </div>
+       <div class="col"> Server </div>
+    </div>
+    <div class="row">
+	    <div class="col"><pre class="code bg-light">  {{ fileobj.owner }} </pre></div>
+       <div class="col"><pre class="code bg-light"> {{ fileobj.group }} </pre></div>
+       <div class="col"><pre class="code bg-light"> {{ fileobj.mode }} </pre></div>
+       <div class="col"><pre class="code bg-light"> {{ fileobj.type }} </pre></div>
+       <div class="col"><pre class="code bg-light"> {{ fileobj.hostname }} </pre></div>
+    </div>
+    <div class="row">
+	    <div class ="col">Precommand</div>
+    </div>
+    <div class="row">
+	    <div class ="col"><pre class="code bg-light"> {{ fileobj.precmd }} </pre></div>
+    </div>
+    <div class="row">
+	    <div class ="col">Postcommand</div>
+    </div>
+    <div class="row">
+	    <div class ="col"><pre class="code bg-light"> {{ fileobj.postcmd }} </pre></div>
+    </div>
+    <div class="row">
+	    <div class ="col">Content</div>
     </div>
     <div class="row">
        <div class="col">
-           <pre class="code bg-light">{{ redis.hget(key,"file").decode() }}</pre>
+           <pre class="code bg-light">{{ fileobj.text }}</pre>
        </div>
     </div>
     {% endif %}

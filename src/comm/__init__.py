@@ -1,11 +1,11 @@
 from flask import current_app, g
 import paramiko
-import db
+from db import File, Device
 import socket
 from io import StringIO
 from lei import *
 
-class machine():
+class machine(Device):
     def __init__(self,host,user=None, keytype=None,key=None,password=None):
         try:
             self.ipaddr=socket.gethostbyname(host)
@@ -16,16 +16,15 @@ class machine():
             self.hostname=self.fqdn.split('.')[0]
         except:
             self.hostname=None
+        current_app.logger.debug(user)
         self.ssh = paramiko.SSHClient()
         self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         self.shell=None
-        self.redis = db.connect()
         self.user=user
         self.keytype=keytype
         self.keycode=key
         self.password=password
         self.key=None
-        self.sync()
     def sync(self):
         if not self.hostname is None and not self.ipaddr is None:
             self.redis.sadd("devices",self.hostname)

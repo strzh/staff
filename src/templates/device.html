@@ -6,5 +6,23 @@
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 ">
     </div>
     <div>{{ list(data) }}</div>
+    <div class='row'>
+	    <div class='col'><button class='btn btn-primary btn-back'><i class='fa fa-arrow-left'>Back</i></button></div>
+	    <div class='col'><button class='btn btn-primary btn-delete'><i class='fa fa-trash-alt'>Delete</i></button></div>
+    </div>
+<script>
+	$(document).ready(function() {
+		$(".btn-back").click(function(){window.history.back();});
+                $(".btn-delete").click(function(){
+			$.ajax({url:"/device/{{ data.id }}",method:"DELETE", success: function(e){
+				if (e == "failed") {
+					alert("could not delete this device");
+				}else{
+				        window.open("/device",'_self');
+				}
+				}})
+		});
+	});
+</script>    
 </main>
 {% endblock %}
