@@ -34,7 +34,7 @@ class device(MethodView):
             return "ok"
         else:
             return render_template("discover_new.html", data=id)
-    def post(self):
+    def post(self,id):
         current_app.logger.debug(request.form)
         host=request.form.get("ips")
         admin=request.form.get("user")

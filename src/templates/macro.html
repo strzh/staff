@@ -55,7 +55,16 @@ $(document).ready(function() {
 {% macro list(data) -%}
 <table class="table">
 {% for k in data %}
-<tr><th>{{ k|safe }}</th><td>{{ data[k]|safe|e }}</td></tr>
+<tr><th>{{ k|safe }}</th><td>
+{%- if k == '_sa_instance_state' -%}
+{%- elif k == flows -%}
+    {%- for v in data[k] -%}
+        v.name
+     {%- endfor -%}
+{%- else -%}
+		{{ data[k]|safe|e }}
+{%- endif -%}
+	</td></tr>
 {% endfor %}
 </table>
 {%- endmacro %}

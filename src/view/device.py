@@ -14,15 +14,16 @@ class devices(View):
 class device(MethodView):
     def get(self, id):
         device = Device.query.filter_by(id=id).first()
+        flows = device.flows
+        current_app.logger.debug(flows)
         del(device.password)
         del(device.keycode)
-        del(device._sa_instance_state)
-        return render_template("device.html",data=device.__dict__)
+        return render_template("device.html",data=device)
     def post(self):
         return render_template("main.html")
     def delete(self, id):
         device = Device.query.filter_by(id=id).first()
-        temp = File.query.filter_by(machine_id=id).first()
+        temp = Flow.query.filter_by(machine_id=id).first()
         if temp is None:
             db.session.delete(device)
             db.session.commit()
