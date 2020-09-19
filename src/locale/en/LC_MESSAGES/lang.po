@@ -21,7 +21,7 @@ msgstr ""
 
 #: templates/device.html:10 templates/template.html:10
 msgid "name"
-msgstr ""
+msgstr "Name"
 
 #: templates/device.html:11
 msgid "OS"
@@ -54,7 +54,7 @@ msgstr ""
 
 #: templates/device.html:25
 msgid "new flow"
-msgstr ""
+msgstr "New Flow"
 
 #: templates/device.html:26 templates/flow.html:83 templates/template.html:66
 msgid "Delete"
@@ -98,7 +98,7 @@ msgstr ""
 
 #: templates/flow.html:68 templates/template.html:72
 msgid "edit"
-msgstr ""
+msgstr "Edit"
 
 #: templates/flow.html:71
 msgid "New Template"
@@ -106,11 +106,11 @@ msgstr ""
 
 #: templates/flow.html:74
 msgid "update to servers"
-msgstr ""
+msgstr "Upload To Server"
 
 #: templates/flow.html:80 templates/template.html:60
 msgid "submit"
-msgstr ""
+msgstr "Submit"
 
 #: templates/flow.html:124
 msgid "New Template Name"
@@ -122,23 +122,23 @@ msgstr ""
 
 #: templates/layout.html:23
 msgid "discover"
-msgstr ""
+msgstr "Discover"
 
 #: templates/template.html:16
 msgid "filename"
-msgstr ""
+msgstr "File Path"
 
 #: templates/template.html:21
 msgid "owner"
-msgstr ""
+msgstr "Owner"
 
 #: templates/template.html:22
 msgid "group"
-msgstr ""
+msgstr "Group"
 
 #: templates/template.html:23
 msgid "mode"
-msgstr ""
+msgstr "Mode"
 
 #: templates/template.html:24
 msgid "Type"
@@ -150,5 +150,5 @@ msgstr ""
 
 #: templates/template.html:63
 msgid "download from server"
-msgstr ""
+msgstr "Download From Server"
 

@@ -126,7 +126,7 @@ msgstr "新设备"
 
 #: templates/template.html:16
 msgid "filename"
-msgstr "名字"
+msgstr "文件路径"
 
 #: templates/template.html:21
 msgid "owner"
