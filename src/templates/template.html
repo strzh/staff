@@ -4,121 +4,98 @@
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 ">
     </div>
     <div>
-    {%- if editable -%}
-    <form role="form" method="post">
+    <form role="form" method="post" id='formid'>
     <div class="row">
        <div class="col">
-	   filename
-	   <pre class="code bg-light"><input class="form-control input-normal" type='input' name='path' value='{{ fileobj.path }}'></pre>
+	       {{_("name")}}
+	       <pre class="code bg-light"><input class="form-control input-normal" type='input' name='name' value='{{ fileobj.name or ""  }}' {{ editable}} ></pre>
        </div>
     </div>
     <div class="row">
-       <div class="col"> owner </div>
-       <div class="col"> group </div>
-       <div class="col"> mode </div>
-       <div class="col"> Type </div>
-       <div class="col"> Server </div>
+       <div class="col">
+	       {{_("filename")}}
+	       <pre class="code bg-light"><input class="form-control input-normal" type='input' name='path' value='{{ fileobj.path or ""  }}' {{ editable}} ></pre>
+       </div>
     </div>
     <div class="row">
-       <div class="col"><pre class="code bg-light"><input class="form-control input-normal" type='input' name='owner' value='{{ fileobj.owner }}'></pre></div>
-       <div class="col"><pre class="code bg-light"><input class="form-control input-normal" type='input' name='group' value='{{ fileobj.group }}'></pre></div>
-       <div class="col"><pre class="code bg-light"><input class="form-control input-normal" type='input' name='mode' value='{{ fileobj.mode }}'></pre></div>
-       <div class="col"><pre class="code bg-light form-control">{{ fileobj.type }}</pre></div>
-       <div class="col"><pre class="code bg-light form-control">{{ fileobj.hostname }}</pre></div>
+	    <div class="col"> {{_("owner")}} </div>
+	    <div class="col"> {{_("group")}} </div>
+	    <div class="col"> {{_("mode")}} </div>
+	    <div class="col"> {{_("Type")}} </div>
+	    <div class="col"> {{_("Flow")}} </div>
     </div>
     <div class="row">
-	    <div class ="col">Precommand</div>
+       <div class="col"><pre class="code bg-light"><input class="form-control input-normal" type='input' name='owner' value='{{ fileobj.owner or "" }}' {{ editable }}></pre></div>
+       <div class="col"><pre class="code bg-light"><input class="form-control input-normal" type='input' name='group' value='{{ fileobj.group or "" }}' {{ editable }}></pre></div>
+       <div class="col"><pre class="code bg-light"><input class="form-control input-normal" type='input' name='mode' value='{{ fileobj.mode or "" }}' {{ editable }}></pre></div>
+       <div class="col"><pre class="code bg-light"><select class="form-control" name='type' {{ editable == 'readonly' and 'disabled'  }}>
+        {% for i in ['Shell','Jinja','File'] -%}
+	    {%- if fileobj.type == i-%}
+	    <option selected>{{i}}</option> 
+	    {%- else -%}
+	    <option>{{i}}</option> 
+	    {%- endif -%}
+        {%- endfor %}
+       </select></pre></div>
+       <div class="col"><pre class="code bg-light form-control">{{ fileobj.flow.name }}</pre></div>
     </div>
     <div class="row">
-	    <div class ="col">
-	    <textarea class="form-control" id="file_conent" type="text" name="precmd" rows=2>{{ fileobj.precmd or '' }}</textarea>
- 	    </div>
-    </div>
-    <div class="row">
-	    <div class ="col">Postcommand</div>
-    </div>
-    <div class="row">
-	    <div class ="col">
-		    <textarea class="form-control" type="text" name="postcmd" rows=2>{{ fileobj.postcmd or '' }}</textarea>
-	    </div>
-    </div>
-    <div class="row">
-	    <div class ="col">Content</div>
+	    <div class ="col">{{_("Content")}}</div>
     </div>
     <div class="row">
        <div class="col">
-	       <textarea class="form-control" type="text" name="text" rows=10>{{ fileobj.text  or ''}}</textarea>
+	       <textarea class="form-control" type="text" name="text" data-lang='shell' rows=10 {{ editable }}>{{ fileobj.text  or ''}}</textarea>
        </div>
     </div>
-
-	    
-    <div class="row">
-       <div class="col">
-        <button class="btn btn-outline-primary" style="margin-left:10px;" id="submit" placeholder="submit keys"><i class="fa fa-submit">submit</i></button>
-       </div>
-       <div class="col">
-        <button class="btn btn-outline-primary" style="margin-left:10px;" id="delete" placeholder="delete keys"><i class="fa fa-delete">delete</i></button>
-       </div>
-    </div>
+    {%- if editable != 'readonly' -%}
+       <input type="hidden" name='editable' value='readonly'>	    
+    {% else %}
+       <input type="hidden" name='editable' value='True'>	    
+    {% endif %}
     </form>
+&nbsp;
+    {%- if editable != 'readonly' -%}
+    <div class="row">
+       <div class="col">
+	       <button class="btn btn-outline-primary" style="margin-left:10px;" id="submit" placeholder="submit keys" name="action" value="save" onclick=document.forms[0].submit()><i class="fa fa-submit">{{_("submit")}}</i></button>
+       </div>
+       <div class="col">
+	       <button class="btn btn-outline-primary" style="margin-left:10px;" id="download" placeholder="submit keys" name="action" value="doanload"><i class="fa fa-submit">{{_("download from server")}}</i></button>
+       </div>
+       <div class="col">
+	       <button class="btn btn-outline-primary" style="margin-left:10px;" id="delete" placeholder="delete keys" name="action" value="delete"><i class="fa fa-delete">{{_("Delete")}}</i></button>
+       </div>
+    </div>
     {% else %}
     <div class="row">
        <div class="col">
-	   filename
-           <pre class="code bg-light">{{ fileobj.path }}</pre>
+	       <button class="btn btn-outline-primary btn-edit" style="margin-left:10px;" id="submit" placeholder="submit keys" name="action" value="edit" onclick=document.forms[0].submit()><i class="fa fa-submit">{{_("edit")}}</i></button>
        </div>
     </div>
-    <div class="row">
-       <div class="col"> owner </div>
-       <div class="col"> group </div>
-       <div class="col"> mode </div>
-       <div class="col"> Type </div>
-       <div class="col"> Server </div>
-    </div>
-    <div class="row">
-	    <div class="col"><pre class="code bg-light">  {{ fileobj.owner }} </pre></div>
-       <div class="col"><pre class="code bg-light"> {{ fileobj.group }} </pre></div>
-       <div class="col"><pre class="code bg-light"> {{ fileobj.mode }} </pre></div>
-       <div class="col"><pre class="code bg-light"> {{ fileobj.type }} </pre></div>
-       <div class="col"><pre class="code bg-light"> {{ fileobj.hostname }} </pre></div>
-    </div>
-    <div class="row">
-	    <div class ="col">Precommand</div>
-    </div>
-    <div class="row">
-	    <div class ="col"><pre class="code bg-light"> {{ fileobj.precmd or '' }} </pre></div>
-    </div>
-    <div class="row">
-	    <div class ="col">Postcommand</div>
-    </div>
-    <div class="row">
-	    <div class ="col"><pre class="code bg-light"> {{ fileobj.postcmd or '' }} </pre></div>
-    </div>
-    <div class="row">
-	    <div class ="col">Content</div>
-    </div>
-    <div class="row">
-       <div class="col">
-           <pre class="code bg-light">{{ fileobj.text }}</pre>
-       </div>
-    </div>
-    <div class="row">
-       <div class="col">
-	    <button class="btn btn-outline-primary btn-edit" style="margin-left:10px;" id="submit" placeholder="submit keys"><i class="fa fa-submit">edit</i></button>
-       </div>
-       <div class="col">
-	    <button class="btn btn-outline-primary btn-edit" style="margin-left:10px;" id="syncout" placeholder="submit keys"><i class="fa fa-submit">write to server</i></button>
-       </div>
-    </div>
-    <script> 
-	    $(document).ready(function() {
-		$("#submit").click(function(e){
-			console.log(e)
-			window.open("?editable=true","_self");
-		});
-	    });
-    </script>
     {% endif %}
+    <script> 
+	$(document).ready(function() {
+		$("#download").click(function(){
+                        $.ajax({url:"/template/{{ fileobj.id }}",data:$("#formid").serialize(),method:"HEAD", success: function(e){
+                                if (e == "failed") {
+					alert("{{_("Discover failed")}}");
+                                }else{
+					window.open("/template/{{fileobj.id}}",'_self');
+                                }
+                                }})
+
+		});
+                $("#delete").click(function(){
+                        $.ajax({url:"/template/{{ fileobj.id }}",method:"DELETE", success: function(e){
+                                if (e == "failed") {
+					alert("{{_("could not delete this device")}}");
+                                }else{
+					window.open("/template/",'_self');
+                                }
+                                }})
+                });
+	});
+    </script>
     </div>
 </main>
 {% endblock %}

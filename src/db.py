@@ -24,6 +24,39 @@ class File(db.Model):
     text = Column(Text)
     flow_id = Column(Integer, db.ForeignKey('flow.id'))
     device_id = Column(Integer, db.ForeignKey('device.id'))
+    def writeto(self,dev):
+        shell = dev.ssh.invoke_shell()
+        fileContent = None
+        if self.type == "Shell":
+            try: 
+                sin,sout,serror=ssh.exec_command(self.text)
+            except Exception as d:
+                current_app.logger.error("command: {}".format(d))
+            return True
+        if self.type == "Jinja":
+            template = Template(self.text)
+            fileContent = template.render(server=dev)
+        if self.type == "File":
+            fileContent = self.text
+        try:
+            sftp = dev.ssh.open_sftp()
+            fd=sftp.open(self.path,mode='w')
+            fd.writelines( fileContent )
+            fd.close()
+            sftp.chmod(self.path, int(self.mode))
+            sftp.close()
+        except paramiko.SSHException:
+            current_app.logger.error("sftp failed")
+            try:
+                sin,sout,serror=dev.ssh.exec_command("cat > "+self.path+"<<EOF")
+            except Exception as a:
+                current_app.logger.error("command: {}".format(a))
+        try:
+            dev.ssh.exec_command("chown "+self.owner+":"+self.group+" "+self.path)
+        except Exception as d:
+            current_app.logger.error("command: {}".format(d))
+        return True
+
 class Flow(db.Model):
     __tablename__ = 'flow'
     id = Column(Integer, primary_key=True)
@@ -32,6 +65,17 @@ class Flow(db.Model):
     precmd = Column(String(1024))
     files = db.relationship("File", backref="flow")
     servers = db.relationship('Device',secondary=flows)
+    def syncToservers(self):
+        for dev in self.servers:
+            dev.connect()
+            if self.precmd is not None:
+                dev.exec_command(self.precmd)
+            for temp in self.files:
+                temp.writeto(dev)
+            if self.postcmd is not None:
+                dev.exec_command(self.postcmd)
+            dev.ssh.close()
+        return True
 
 class Device(db.Model):
     __tablename__ = "device"
@@ -47,6 +91,7 @@ class Device(db.Model):
     os = Column(String(255))
     arch = Column(String(255))
     flows = db.relationship('Flow',secondary=flows)
+    ssh = None
     def loadkey(self):
         key=None
         try:
@@ -73,7 +118,14 @@ class Device(db.Model):
             ssh.connect(self.ipaddr,username=self.user,password=self.password)
         else:
             ssh.connect(self.ipaddr,username=self.user,password=self.password,pkey=key)
+        self.ssh=ssh
         return ssh
+    def exec_command(self,cmds):
+        try:
+            sin,sout,serror = self.ssh.exec_command( cmds )
+        except Exception as a:
+            current_app.logger.error("command: {}".format(a))
+        return serror is None
     def discover(self):
         ssh = self.connect()
         shell = ssh.invoke_shell()
@@ -84,7 +136,7 @@ class Device(db.Model):
         sin,sout,serr = ssh.exec_command("uname -o")
         self.os=sout.readline().strip()
         ssh.close()
-    def readfile(self, filename, replace=True):
+    def readfile(self, filename,filetype="File",fileid=None, replace=True):
         ssh = self.connect()
         shell = ssh.invoke_shell()
         rs=None
@@ -94,6 +146,7 @@ class Device(db.Model):
         mode = None
         try:
             sftp = ssh.open_sftp()
+            current_app.logger.debug(filename)
             fd=sftp.open(filename)
             rs=split.join(fd.readlines())
             fd.close()
@@ -113,52 +166,24 @@ class Device(db.Model):
             group = ary[3]
         except Exception as e:
             current_app.logger.error("command: {}".format(e))
-        if replace and not rs is None:
+        if replace and rs is not None:
             name = filename[filename.rindex(os.sep)+1:]
-            fi = File.query.filter_by(path=filename).filter_by(device_id=self.id).first()
+            if fileid is None:
+                fi = File.query.filter_by(path=filename).filter_by(device_id=self.id).first()
+            else:
+                fi = File.query.filter_by(id=fileid).first()
             if fi is None:
-                fi = File(device_id=self.id,text=rs,name=name,path=filename, mode=mode,type="Jinja", owner=owner,group=group)
+                fi = File(device_id=self.id,text=rs,name=name,path=filename, mode=mode,type=filetype, owner=owner,group=group)
             else:
                 fi.name = name
                 fi.text = rs
                 fi.mode = mode
                 fi.owner = owner
                 fi.group = group
-                fi.type = 'File'
+                fi.type = filetype
             db.session.add(fi)
             db.session.commit()
+        current_app.logger.debug(rs)
         return rs
-    def writefile(self,fileid):
-        ssh = self.connect()
-        shell = ssh.invoke_shell()
-        fileContent = None
-        
-        temp = File.query.filter_by(id=fileid).first()
-        dev = Device.query.filter_by(id=temp.machine_id).first()
-        if temp.type == "Jinja":
-            template = Template(temp.text)
-            fileContent = template.render(server=dev)
-        if temp.type == "file":
-            fileContent = temp.text
-        if temp.precmd is not None:
-            ssh.exec_command( temp.precmd )
-        try:
-            sftp = self.ssh.open_sftp()
-            fd=sftp.open(temp.path,mode='w')
-            fd.writelines( fileContent )
-            fd.close()
-            sftp.chmod(temp.path, int(temp.mode))
-            sftp.close()
-        except paramiko.SSHException:
-            current_app.logger.error("sftp failed")
-            try:
-                sin,sout,serror=ssh.exec_command("cat > "+temp.path+"<<EOF")
-            except Exception as a:
-                current_app.logger.error("command: {}".format(a))
-        try:
-            ssh.exec_command("chown "+temp.owner+":"+temp.group+" "+temp.path)
-            ssh.exec_command( temp.postcmd)
-        except Exception as d:
-            current_app.logger.error("command: {}".format(d))
 
 

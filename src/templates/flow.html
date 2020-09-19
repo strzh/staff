@@ -9,36 +9,34 @@
     <form role="form" method="post">
     <div class="row">
        <div class="col">
-	   Flow name
-	   <pre class="code bg-light"><input class="form-control input-normal" type='input' name='name' value='{{ data.name}}' {{ editable }}></pre>
+	       {{_("Flow name")}}
+	       <pre class="code bg-light"><input class="form-control input-normal" type='input' name='name' value='{{ data.name}}' {{ editable }}></pre>
        </div>
     </div>
     <div class="row">
-	    <div class="col"> Servers </div>
-	    <div class="col"> Templates </div>
+	    <div class="col">{{_("Servers")}} </div>
+	    <div class="col"> {{_("Templates")}} </div>
     </div>
     <div class="row">
-	    <div class="col"><select name='servers' multiple {{ editable }}>
+	    <div class="col"><select name='servers' class="form-control" multiple {{ editable == 'readonly' and 'disabled'  }}>
 			    {%- for i in servers -%}
 			    {%- if i.id in serverids -%}
 			     <option value='{{ i.id }}' selected>{{ i.name }}</option>
 			     {%- else -%}
 			     <option value='{{ i.id }}' >{{ i.name }}</option>
 			     {%- endif -%}
-			    {%- endfor -%}
-		    </select></div>
-	    <div class="col"><select name='templates' multiple {{ editable }}>
+			    {%- endfor -%} </select></div>
+	    <div class="col"><select name='templates' class="form-control" multiple {{ editable == 'readonly' and 'disabled'  }} >
 			    {%- for i in templates -%}
 			    {%- if i.id in fileids -%} 
 			    <option value='{{ i.id }}' selected>{{ i.name }}</option>
 			     {%- else -%}
 			    <option value='{{ i.id }}'>{{ i.name }}</option>
 			     {%- endif -%}
-			    {%- endfor -%}
-		    </select></div>
+			    {%- endfor -%} </select></div>
     </div>
     <div class="row">
-	    <div class ="col">Precommand</div>
+	    <div class ="col">{{_("Precommand")}}</div>
     </div>
     <div class="row">
 	    <div class ="col">
@@ -46,42 +44,96 @@
  	    </div>
     </div>
     <div class="row">
-	    <div class ="col">Postcommand</div>
+	    <div class ="col">{{_("Postcommand")}}</div>
     </div>
     <div class="row">
 	    <div class ="col">
 		    <textarea class="form-control" type="text" name="postcmd" rows=2 {{ editable }} >{{ data.postcmd or '' }}</textarea>
 	    </div>
     </div>
+    <div class="row">
+	    <div class ="col"> &nbsp; </div>
+    </div>
+       {% if editable == 'readonly' %}
+	    <input type="hidden" name='editable' value='True'>
+       {% else %}
+	    <input type="hidden" name='editable' value='readonly'>
+       {% endif %} 
+    </form>
 	    
     <div class="row">
        {% if editable == 'readonly' %}
 	    <input type="hidden" name='editable' value='True'>
        <div class="col">
-	    <button class="btn btn-outline-primary btn-edit" style="margin-left:10px;" id="submit" placeholder="submit keys"><i class="fa fa-submit">edit</i></button>
+	       <button class="btn btn-outline-primary btn-edit" style="margin-left:10px;" id="submit" placeholder="submit keys" onclick=document.forms[0].submit()><i class="fa fa-submit">{{_("edit")}}</i></button>
        </div>
        <div class="col">
-	    <button class="btn btn-outline-primary btn-edit" style="margin-left:10px;" id="syncout" placeholder="submit keys"><i class="fa fa-submit">write to server</i></button>
+	       <button class="btn btn-outline-primary btn-edit" style="margin-left:10px;" id="newtemplate" data-toggle='modal' data-target='#myModal'><i class="fa fa-submit">{{_("New Template")}}</i></button>
+       </div>
+       <div class="col">
+	       <button class="btn btn-outline-warning btn-edit" style="margin-left:10px;" id="syncout" placeholder="submit keys"><i class="fa fa-submit">{{_("update to servers")}}</i></button>
        </div>
        {% else %}
 	    <input type="hidden" name='editable' value='readonly'>
+    </form>
        <div class="col">
-        <button class="btn btn-outline-primary" style="margin-left:10px;" id="submit" placeholder="submit keys"><i class="fa fa-submit">submit</i></button>
+	       <button class="btn btn-outline-primary" style="margin-left:10px;" id="submit" placeholder="submit keys" onclick=document.forms[0].submit()><i class="fa fa-submit">{{_("submit")}}</i></button>
        </div>
        <div class="col">
-        <button class="btn btn-outline-primary" style="margin-left:10px;" id="delete" placeholder="delete keys"><i class="fa fa-delete">delete</i></button>
+	       <button class="btn btn-outline-primary btn-delete" style="margin-left:10px;" id="delete" placeholder="delete keys"><i class="fa fa-delete">{{_("Delete")}}</i></button>
        </div>
        {% endif %} 
     </div>
-    </form>
-    <!--script> 
-	    $(document).ready(function() {
-		$("#submit").click(function(e){
-			console.log(e)
-			window.open("?editable=true","_self");
+    <script> 
+         $(document).ready(function() {
+                $(".btn-delete").click(function(){
+                        $.ajax({url:"/flow/{{ data.id }}",method:"DELETE", success: function(e){
+                                if (e == "failed") {
+					alert("{{_("could not delete this device")}}");
+                                }else{
+                                        window.open("/flow",'_self');
+                                }
+			},error:function(e){
+				alert(e)
+                                }})
+                });
+		$("#syncout").click(function(){
+                        $.ajax({url:"/flow/{{ data.id }}",method:"HEAD", success: function(e){
+				alert("{{_("sync to server")}}");
+			},error:function(e){
+				alert(e)
+                                }})
 		});
-	    });
-    </script-->
+                $(".btn-flow").click(function(){
+                        $.ajax({url:"/template/",data:"name="+$("#templatename").val(), method:"PUT", success: function(e){
+                                alert(e)
+                                window.open("/template/"+e,'_self');
+			},error:function(e){
+				alert(e)
+                        } });
+                });
+         });
+    </script>
     </div>
 </main>
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel">{{_("New Template Name")}}</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+      </div>
+      <div class="modal-body">
+              <input class="form-control input-normal" type='input' name='name' id="templatename" value=''>
+      </div>
+      <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">{{_("Close")}}</button>
+              <button type="button" class="btn btn-primary btn-flow">{{_("Save and edit")}}</button>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

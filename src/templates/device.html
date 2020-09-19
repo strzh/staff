@@ -6,25 +6,24 @@
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 ">
     </div>
     <div><table class="table">
-		    <tr><th>ID</th><td>{{ data.id }}</td> </tr>
-		    <tr><th>name</th><td>{{ data.name }}</td> </tr>
-		    <tr><th>OS</th><td>{{ data.os }}</td> </tr>
-		    <tr><th>Arch</th><td>{{ data.arch }}</td> </tr>
-		    <tr><th>FQDN</th><td>{{ data.fqdn }}</td> </tr>
-		    <tr><th>Address</th><td>{{ data.ipaddr }}</td> </tr>
-		    <tr><th>Admin User</th><td>{{ data.user }}</td> </tr>
-		    <tr><th>Flow</th> <td>
+		    <tr><th>{{_("ID")}}</th><td>{{ data.id }}</td> </tr>
+		    <tr><th>{{_("name")}}</th><td>{{ data.name }}</td> </tr>
+		    <tr><th>{{_("OS")}}</th><td>{{ data.os }}</td> </tr>
+		    <tr><th>{{_("Arch")}}</th><td>{{ data.arch }}</td> </tr>
+		    <tr><th>{{_("FQDN")}}</th><td>{{ data.fqdn }}</td> </tr>
+		    <tr><th>{{_("Address")}}</th><td>{{ data.ipaddr }}</td> </tr>
+		    <tr><th>{{_("Admin User")}}</th><td>{{ data.user }}</td> </tr>
+		    <tr><th>{{_("Flow")}}</th> <td>
 				    {%- for i in data.flows -%}	    
 				    <a href="/flow/{{i.id}}">{{ i.name }}</a> &nbsp;
-				    {%- endfor -%}
-			    </td> </tr>
+				    {%- endfor -%} </td> </tr>
 		    </table>
     </div>
 
     <div class='row'>
-	    <div class='col'><button class='btn btn-primary btn-back'><i class='fa fa-arrow-left'>Back</i></button></div>
-	    <div class='col'><button class='btn btn-primary' type='button' data-toggle='modal' data-target='#myModal'><i class='fa fa-work-flow'>new flow</i></button></div>
-	    <div class='col'><button class='btn btn-primary btn-delete'><i class='fa fa-trash-alt'>Delete</i></button></div>
+	    <div class='col'><button class='btn btn-primary btn-back'><i class='fa fa-arrow-left'>{{_("Back")}}</i></button></div>
+	    <div class='col'><button class='btn btn-primary' type='button' data-toggle='modal' data-target='#myModal'><i class='fa fa-work-flow'>{{_("new flow")}}</i></button></div>
+	    <div class='col'><button class='btn btn-primary btn-delete'><i class='fa fa-trash-alt'>{{_("Delete")}}</i></button></div>
     </div>
     
 <script>
@@ -33,16 +32,20 @@
                 $(".btn-delete").click(function(){
 			$.ajax({url:"/device/{{ data.id }}",method:"DELETE", success: function(e){
 				if (e == "failed") {
-					alert("could not delete this device");
+					alert("{{_("could not delete this device")}}");
 				}else{
 				        window.open("/device",'_self');
 				}
+			}, error:function(e){
+				alert(e);
 				}})
 		});
 		$(".btn-flow").click(function(){
-			$.ajax({url:"/flow",data:"name="+$("#flowname").val(), method:"POST", success: function(e){
+			$.ajax({url:"/flow/",data:"name="+$("#flowname").val(), method:"PUT", success: function(e){
 				alert(e)
 				window.open("/flow/"+e,'_self');
+			}, error:function(e){
+				alert(e)
 			} });
 		});
 	});
@@ -53,17 +56,15 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">New Flow Name</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
+	      <h5 class="modal-title" id="exampleModalLabel">{{_("New Flow Name")}}</h5>
+        	<button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span aria-hidden="true">&times;</span> </button>
       </div>
       <div class="modal-body">
 	      <input class="form-control input-normal" type='input' name='name' id="flowname" value=''>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary btn-flow">Save and edit</button>
+	      <button type="button" class="btn btn-secondary" data-dismiss="modal">{{_("Close")}}</button>
+	      <button type="button" class="btn btn-primary btn-flow">{{_("Save and edit")}}</button>
       </div>
     </div>
   </div>

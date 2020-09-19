@@ -17,116 +17,116 @@ msgstr ""
 
 #: templates/device.html:9
 msgid "ID"
-msgstr "序号"
+msgstr ""
 
 #: templates/device.html:10 templates/template.html:10
 msgid "name"
-msgstr "名字"
+msgstr ""
 
 #: templates/device.html:11
 msgid "OS"
-msgstr "操作系统"
+msgstr ""
 
 #: templates/device.html:12
 msgid "Arch"
-msgstr "架构"
+msgstr ""
 
 #: templates/device.html:13
 msgid "FQDN"
-msgstr "域名"
+msgstr ""
 
 #: templates/device.html:14
 msgid "Address"
-msgstr "地址"
+msgstr ""
 
 #: templates/device.html:15
 msgid "Admin User"
-msgstr "管理员"
+msgstr ""
 
 #: templates/device.html:16 templates/layout.html:13
 #: templates/template.html:25
 msgid "Flow"
-msgstr "步骤"
+msgstr ""
 
 #: templates/device.html:24
 msgid "Back"
-msgstr "回退"
+msgstr ""
 
 #: templates/device.html:25
 msgid "new flow"
-msgstr "新步骤"
+msgstr ""
 
 #: templates/device.html:26 templates/flow.html:83 templates/template.html:66
 msgid "Delete"
-msgstr "删除"
+msgstr ""
 
 #: templates/device.html:59
 msgid "New Flow Name"
-msgstr "新建步骤"
+msgstr ""
 
 #: templates/device.html:66 templates/flow.html:133
 msgid "Close"
-msgstr "关闭"
+msgstr ""
 
 #: templates/device.html:67 templates/flow.html:134
 msgid "Save and edit"
-msgstr "编辑"
+msgstr ""
 
 #: templates/discover_new.html:10
 msgid "Discover a new server"
-msgstr "获取一台新设备信息"
+msgstr ""
 
 #: templates/flow.html:12
 msgid "Flow name"
-msgstr "步骤名称"
+msgstr ""
 
 #: templates/flow.html:17
 msgid "Servers"
-msgstr "设备"
+msgstr ""
 
 #: templates/flow.html:18 templates/layout.html:18
 msgid "Templates"
-msgstr "模板"
+msgstr ""
 
 #: templates/flow.html:39
 msgid "Precommand"
-msgstr "配置前执行"
+msgstr ""
 
 #: templates/flow.html:47
 msgid "Postcommand"
-msgstr "配置后执行"
+msgstr ""
 
 #: templates/flow.html:68 templates/template.html:72
 msgid "edit"
-msgstr "编辑"
+msgstr ""
 
 #: templates/flow.html:71
 msgid "New Template"
-msgstr "新建模板"
+msgstr ""
 
 #: templates/flow.html:74
 msgid "update to servers"
-msgstr "上传配置"
+msgstr ""
 
 #: templates/flow.html:80 templates/template.html:60
 msgid "submit"
-msgstr "保存"
+msgstr ""
 
 #: templates/flow.html:124
 msgid "New Template Name"
-msgstr "新模板名字"
+msgstr ""
 
 #: templates/layout.html:8
 msgid "Devices"
-msgstr "设备"
+msgstr ""
 
 #: templates/layout.html:23
 msgid "discover"
-msgstr "新设备"
+msgstr ""
 
 #: templates/template.html:16
 msgid "filename"
-msgstr "名字"
+msgstr ""
 
 #: templates/template.html:21
 msgid "owner"
@@ -142,15 +142,13 @@ msgstr ""
 
 #: templates/template.html:24
 msgid "Type"
-msgstr "类型"
+msgstr ""
 
 #: templates/template.html:43
 msgid "Content"
-msgstr "内容"
+msgstr ""
 
 #: templates/template.html:63
 msgid "download from server"
-msgstr "下载模板"
+msgstr ""
 
-msgid "Discover a new template file"
-msgstr "下载一个模板文件"

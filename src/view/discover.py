@@ -18,8 +18,11 @@ class template(MethodView):
         filename=request.form.get("filename")
         ipaddr = socket.gethostbyname(host)
         machine = Device.query.filter_by(ipaddr=ipaddr).first()
-        if machine is not None:
-             data = machine.readfile(filename)
+        try:
+            if machine is not None:
+                data = machine.readfile(filename)
+        except Exception as e:
+            render_template("discover.html",host=host,filename=filename,data=data, errmsg=e) 
         return render_template("discover.html",host=host,filename=filename,data=data)
 class device(MethodView):
     def get(self, id):
@@ -54,7 +57,10 @@ class device(MethodView):
             machine.keytype=keytype 
             machine.fqdn = fqdn
             machine.name = hostname
-        machine.discover()
-        db.session.add(machine)
-        db.session.commit()
+        try:
+            machine.discover()
+            db.session.add(machine)
+            db.session.commit()
+        except Exception as e:
+            return render_template("discover_new.html", host=machine.ipaddr,user=admin,data=keystr,errmsg=e)
         return render_template("discover_new.html", host=machine.ipaddr,user=admin,data=keystr)

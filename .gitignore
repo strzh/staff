@@ -7,3 +7,4 @@ build
 dist
 gmpimpactanlysis.egg-info
 src/staff.yaml
+staff.db

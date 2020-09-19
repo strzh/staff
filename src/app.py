@@ -2,6 +2,7 @@ from flask import Flask, g, render_template
 from flask_sqlalchemy import SQLAlchemy
 import os
 import yaml
+import gettext
 
 #################
 #  load config file
@@ -20,17 +21,22 @@ cfg = yaml.safe_load(open(path+cfg_file))
 # start flask app
 ###########
 app = Flask(__name__)
+app.jinja_env.add_extension('jinja2.ext.i18n')
+gettext.install('lang', 'locale')
+lang = cfg['server'].get('lang',['en'])
+translations = gettext.translation('lang', 'locale', languages=lang)
+app.jinja_env.install_gettext_translations(translations)
 app.config.update(cfg)
 #################
 #  mysql engine
 #################
-if cfg['db'].get('mysql') is None:
-    print("The DB configuration is not setup.")
-    exit(0)
-dbuser = cfg['db']['mysql'].get('user')
-dbpass = cfg['db']['mysql'].get('passwd')
-dbhost = cfg['db']['mysql'].get('host')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://'+dbuser+':'+dbpass+'@'+dbhost+':3306/staff?charset=utf8'
+if cfg.get('db') is None:
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'+path+'/staff.db'
+elif cfg['db'].get('mysql') is not None:
+    dbuser = cfg['db']['mysql'].get('user')
+    dbpass = cfg['db']['mysql'].get('passwd')
+    dbhost = cfg['db']['mysql'].get('host')
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://'+dbuser+':'+dbpass+'@'+dbhost+':3306/staff?charset=utf8'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
 db = SQLAlchemy(app)
 
