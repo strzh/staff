@@ -17,9 +17,12 @@ class flow(MethodView):
                 heads=["ID","flowname",'servers','templates','']
                 for i in steps:
                     files = ""
+                    devs=""
                     for j in i.files:
                         files = files + '<a href="/template/'+str(j.id)+'">'+j.name+'</a>&nbsp;'
-                    ary.append([i.id,"<a href='/flow/"+str(i.id)+"' >"+i.name+"</a>",'', files,''])
+                    for k in i.servers:
+                        devs = devs + '<a href="/device/'+str(k.id)+'">'+k.name+'</a>&nbsp;'
+                    ary.append([i.id,"<a href='/flow/"+str(i.id)+"' >"+i.name+"</a>",devs, files,''])
                 return render_template("flows.html",data=ary,heads=heads)
         else:
             ss = step.servers
