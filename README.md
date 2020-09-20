@@ -24,6 +24,11 @@ server:
     user: xxx
     passwd: xxx
 ```
+currently the package is not implemented.
+please goto dir src execute, you need flask installed:
+```
+./__main__.py
+```
 
 This tool support 2 English and Chinese.
 
