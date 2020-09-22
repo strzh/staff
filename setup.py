@@ -6,9 +6,11 @@ REQUIRES = [
    "Flask",
    "redis",
    'paramiko',
+   "flask_sqlalchemy",
+   "PyYAML",
 ]
 setup(name='managementtool',
-      version="0.1",
+      version="0.2",
       description="An template modifying tools",
       author="lei.zhang@sap.com",
       author_email="lei.zhang@sap.com",
