@@ -8,16 +8,22 @@ from flask import current_app
 from jinja2 import Template
 from app import db
 
-tomodeint = lambda a: ((a[1] == 'r')*4 | (a[2] == 'w')*2 | (a[3] == 'x')*1)*100+((a[4] == 'r')*4 | (a[5] == 'w')*2 | (a[6] == 'x')*1)*10 + ((a[7] == 'r')*4 | (a[8] == 'w')*2 | (a[9] == 'x')*1)
-flows = db.Table('flows',
-                 Column('flow_id', Integer, db.ForeignKey('flow.id')),
-                 Column('device_id', Integer, db.ForeignKey('device.id'))
-                 )
+tomodeint = (
+    lambda a: ((a[1] == "r") * 4 | (a[2] == "w") * 2 | (a[3] == "x") * 1) * 100
+    + ((a[4] == "r") * 4 | (a[5] == "w") * 2 | (a[6] == "x") * 1) * 10
+    + ((a[7] == "r") * 4 | (a[8] == "w") * 2 | (a[9] == "x") * 1)
+)
+flows = db.Table(
+    "flows",
+    Column("flow_id", Integer, db.ForeignKey("flow.id")),
+    Column("device_id", Integer, db.ForeignKey("device.id")),
+)
 
 
 class File(db.Model):
     """ template ORM """
-    __tablename__ = 'file_content'
+
+    __tablename__ = "file_content"
     id = Column(Integer, primary_key=True)
     name = Column(String(255))
     mode = Column(String(4))
@@ -26,8 +32,8 @@ class File(db.Model):
     group = Column(String(255))
     type = Column(String(10))
     text = Column(Text)
-    flow_id = Column(Integer, db.ForeignKey('flow.id'))
-    device_id = Column(Integer, db.ForeignKey('device.id'))
+    flow_id = Column(Integer, db.ForeignKey("flow.id"))
+    device_id = Column(Integer, db.ForeignKey("device.id"))
 
     def writeto(self, dev):
         """ change to dest server file """
@@ -46,7 +52,7 @@ class File(db.Model):
             file_content = self.text
         try:
             sftp = dev.ssh.open_sftp()
-            fd = sftp.open(self.path, mode='w')
+            fd = sftp.open(self.path, mode="w")
             fd.writelines(file_content)
             fd.close()
             sftp.chmod(self.path, int(self.mode))
@@ -54,11 +60,13 @@ class File(db.Model):
         except paramiko.SSHException:
             current_app.logger.error("sftp failed")
             try:
-                dev.ssh.exec_command("cat > "+self.path+"<<EOF")
+                dev.ssh.exec_command("cat > " + self.path + "<<EOF")
             except paramiko.SSHException as e:
                 current_app.logger.error("command: {}".format(e))
         try:
-            dev.ssh.exec_command("chown "+self.owner+":"+self.group+" "+self.path)
+            dev.ssh.exec_command(
+                "chown " + self.owner + ":" + self.group + " " + self.path
+            )
         except paramiko.SSHException as e:
             current_app.logger.error("command: {}".format(e))
         return True
@@ -66,13 +74,14 @@ class File(db.Model):
 
 class Flow(db.Model):
     """ steps for services """
-    __tablename__ = 'flow'
+
+    __tablename__ = "flow"
     id = Column(Integer, primary_key=True)
     name = Column(String(255))
     postcmd = Column(String(1024))
     precmd = Column(String(1024))
     files = db.relationship("File", backref="flow")
-    servers = db.relationship('Device', secondary=flows)
+    servers = db.relationship("Device", secondary=flows)
 
     def sync_servers(self):
         """ save template to servers """
@@ -90,6 +99,7 @@ class Flow(db.Model):
 
 class Device(db.Model):
     """ server model """
+
     __tablename__ = "device"
     id = Column(Integer, primary_key=True)
     name = Column(String(255))
@@ -102,7 +112,7 @@ class Device(db.Model):
     cmd = Column(String(1024))
     os = Column(String(255))
     arch = Column(String(255))
-    flows = db.relationship('Flow', secondary=flows)
+    flows = db.relationship("Flow", secondary=flows)
     ssh = None
 
     def loadkey(self):
@@ -132,7 +142,9 @@ class Device(db.Model):
         if key is None or self.keytype == "password":
             ssh.connect(self.ipaddr, username=self.user, password=self.password)
         else:
-            ssh.connect(self.ipaddr, username=self.user, password=self.password, pkey=key)
+            ssh.connect(
+                self.ipaddr, username=self.user, password=self.password, pkey=key
+            )
         self.ssh = ssh
         return ssh
 
@@ -187,20 +199,33 @@ class Device(db.Model):
                 current_app.logger.error("command: {}".format(e))
         try:
             sin, sout, serror = ssh.exec_command("ls -l " + filename)
-            ary = re.split(' +', sout.readlines()[0])
+            ary = re.split(" +", sout.readlines()[0])
             mode = tomodeint(ary[0])
             owner = ary[2]
             group = ary[3]
         except paramiko.SSHException as e:
             current_app.logger.error("command: {}".format(e))
         if replace and rs is not None:
-            name = filename[filename.rindex(os.sep)+1:]
+            name = filename[filename.rindex(os.sep) + 1 :]
             if fileid is None:
-                file_i = File.query.filter_by(path=filename).filter_by(device_id=self.id).first()
+                file_i = (
+                    File.query.filter_by(path=filename)
+                    .filter_by(device_id=self.id)
+                    .first()
+                )
             else:
                 file_i = File.query.filter_by(id=fileid).first()
             if file_i is None:
-                file_i = File(device_id=self.id, text=rs, name=name, path=filename, mode=mode, type=filetype, owner=owner, group=group)
+                file_i = File(
+                    device_id=self.id,
+                    text=rs,
+                    name=name,
+                    path=filename,
+                    mode=mode,
+                    type=filetype,
+                    owner=owner,
+                    group=group,
+                )
             else:
                 file_i.name = name
                 file_i.text = rs

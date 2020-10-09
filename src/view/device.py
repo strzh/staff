@@ -19,12 +19,21 @@ class DeviceView(MethodView):
             ary = []
             devices = Device.query.all()
             for i in devices:
-                ary.append([i.id, "<a href='"+str(i.id)+"'>"+i.name+"</a>", i.os, i.arch, i.ipaddr, i.id])
+                ary.append(
+                    [
+                        i.id,
+                        "<a href='" + str(i.id) + "'>" + i.name + "</a>",
+                        i.os,
+                        i.arch,
+                        i.ipaddr,
+                        i.id,
+                    ]
+                )
             return render_template("devices.html", dataset=ary, heads=heads)
         flows = device.flows
         current_app.logger.debug(flows)
-        del(device.password)
-        del(device.keycode)
+        del device.password
+        del device.keycode
         return render_template("device.html", data=device)
 
     @staticmethod
