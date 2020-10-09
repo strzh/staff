@@ -1,15 +1,21 @@
-from flask import current_app,request
-from flask.views import MethodView
-from . import device,discover,template,flow
+""" view """
+# from flask import current_app, request
+# from flask.views import MethodView
+from view.flow import FlowView
+from view.template import TemplateView
+from view.device import DeviceView
+from view import discover
+
+
 def registerRoute(app):
-    app.add_url_rule("/discover/",view_func=discover.template.as_view('discover'))
-    app.add_url_rule("/discover/dev",defaults={'id':None},view_func=discover.device.as_view('discover.device.new'))
-    app.add_url_rule("/discover/dev/<id>",view_func=discover.device.as_view('discover.device'))
-    app.add_url_rule("/device/",defaults={'id':None},view_func=device.device.as_view('devices'))
-    app.add_url_rule("/device/<id>",view_func=device.device.as_view('device'))
-    app.add_url_rule("/template/<id>",view_func=template.template.as_view('template'))
-    app.add_url_rule("/template/",defaults={'id':None},view_func=template.template.as_view('templates'))
-    app.add_url_rule("/flow/", defaults={'id':None}, view_func=flow.flow.as_view('flows'))
-    app.add_url_rule("/flow/<id>", view_func=flow.flow.as_view('flow'))
+    """ register Route"""
+    app.add_url_rule("/discover/", view_func=discover.NewTemplate.as_view('discover'))
+    app.add_url_rule("/discover/dev", defaults={'d_id': None}, view_func=discover.NewDevice.as_view('discover.device.new'))
+    app.add_url_rule("/discover/dev/<d_id>", view_func=discover.NewDevice.as_view('discover.device'))
+    app.add_url_rule("/device/", defaults={'d_id': None}, view_func=DeviceView.as_view('devices'))
+    app.add_url_rule("/device/<d_id>", view_func=DeviceView.as_view('device'))
+    app.add_url_rule("/template/<t_id>", view_func=TemplateView.as_view('template'))
+    app.add_url_rule("/template/", defaults={'t_id': None}, view_func=TemplateView.as_view('templates'))
+    app.add_url_rule("/flow/", defaults={'f_id': None}, view_func=FlowView.as_view('flows'))
+    app.add_url_rule("/flow/<f_id>", view_func=FlowView.as_view('flow'))
     return app
-        

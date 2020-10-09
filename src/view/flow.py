@@ -1,39 +1,47 @@
-from flask import render_template,current_app,request
-from flask.views import MethodView,View
-import json
+""" FLow control"""
+from flask import render_template, current_app, request
+from flask.views import MethodView
 from db import Device, Flow, File
 from app import db
-class flow(MethodView):
-    def get(self, id):
+
+
+class FlowView(MethodView):
+    """ FLow View class """
+    @staticmethod
+    def get(f_id):
+        """ get method """
         step = None
-        if id is not None:
-            step = Flow.query.get(id)
+        if f_id is not None:
+            step = Flow.query.get(f_id)
         if step is None:
             name = request.args.get("name")
             current_app.logger.debug(request.args)
             if name is None:
-                ary=[]
+                ary = []
                 steps = Flow.query.all()
-                heads=["ID","flowname",'servers','templates','']
+                heads = ["ID", "flowname", 'servers', 'templates', '']
                 for i in steps:
                     files = ""
-                    devs=""
+                    devs = ""
                     for j in i.files:
                         files = files + '<a href="/template/'+str(j.id)+'">'+j.name+'</a>&nbsp;'
                     for k in i.servers:
                         devs = devs + '<a href="/device/'+str(k.id)+'">'+k.name+'</a>&nbsp;'
-                    ary.append([i.id,"<a href='/flow/"+str(i.id)+"' >"+i.name+"</a>",devs, files,''])
-                return render_template("flows.html",data=ary,heads=heads)
-        else:
-            ss = step.servers
-            ss = step.files
-            servers = Device.query.all()
-            templates = File.query.all()
-            return render_template("flow.html",data=step,servers=servers,templates=templates,editable='readonly')
-    def post(self,id):
-        if id is not None:
+                    ary.append([i.id, "<a href='/flow/"+str(i.id)+"' >"+i.name+"</a>", devs, files, ''])
+                return render_template("flows.html", data=ary, heads=heads)
+            return name
+        x = step.servers
+        x = step.files
+        servers = Device.query.all()
+        templates = File.query.all()
+        return render_template("flow.html", data=step, servers=servers, templates=templates, editable='readonly')
+
+    @staticmethod
+    def post(f_id):
+        """ post method """
+        if f_id is not None:
             current_app.logger.debug(request.form)
-            step = Flow.query.filter_by(id=id).first()
+            step = Flow.query.filter_by(id=f_id).first()
             editable = request.form.get('editable')
             if editable == 'readonly':
                 step.name = request.form.get('name')
@@ -51,38 +59,44 @@ class flow(MethodView):
                     step.files.append(temp)
                 db.session.add(step)
                 db.session.commit()
-            ss = step.servers
-            ss = step.files
+            x = step.servers
+            x = step.files
         editable = request.form.get("editable")
         servers = Device.query.all()
         templates = File.query.all()
-        return render_template("flow.html",data=step,servers=servers,templates=templates,editable=editable)
-    def put(self,id):
-        if id is None:
+        return render_template("flow.html", data=step, servers=servers, templates=templates, editable=editable)
+
+    @staticmethod
+    def put(f_id):
+        """ new Flow """
+        if f_id is None:
             name = request.form.get("name")
             if name is None:
                 return render_template("flows.html")
-            else:
-                step = Flow.query.filter_by(name=name).first()
-                if step is None:
-                    step = Flow(name=name)
-                    db.session.add(step)
-                    db.session.commit()
-                    return str(step.id)
-                else:
-                    return str(step.id)
+            step = Flow.query.filter_by(name=name).first()
+            if step is None:
+                step = Flow(name=name)
+                db.session.add(step)
+                db.session.commit()
+                return str(step.id)
+            return str(step.id)
         return "failed"
-    def delete(self, id):
-        step = Flow.query.filter_by(id=id).first()
+
+    @staticmethod
+    def delete(f_id):
+        """ remove flow """
+        step = Flow.query.filter_by(id=f_id).first()
         temp = step.files
-        if not temp :
+        if not temp:
             db.session.delete(step)
             db.session.commit()
             return step.name
-        else:
-            return "failed"
-    def head(self,id):
-        step = Flow.query.filter_by(id=id).first()
+        return "failed"
+
+    @staticmethod
+    def head(f_id):
+        """ write to server """
+        step = Flow.query.filter_by(id=f_id).first()
         if step is not None:
-            rs = step.syncToservers()
+            rs = step.syncToServers()
         return "ok"

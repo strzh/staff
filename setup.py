@@ -17,5 +17,5 @@ setup(name='managementtool',
       packages=PACKAGES,
       include_package_data=True,
       install_requires=REQUIRES,
-#      package_data = {"cmdb":["templates/*.html","static"]}
-)
+      #      package_data = {"cmdb":["templates/*.html","static"]}
+      )

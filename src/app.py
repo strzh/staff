@@ -1,21 +1,23 @@
-from flask import Flask, g, render_template
-from flask_sqlalchemy import SQLAlchemy
+""" flask main endpoint """
 import os
-import yaml
+import sys
 import gettext
+import yaml
+from flask import Flask, render_template
+from flask_sqlalchemy import SQLAlchemy
 
 #################
 #  load config file
 #################
-cfg_file = "staff.yaml"
-if os.path.isfile(cfg_file):
-    path="./"
-elif os.path.isfile(os.path.expanduser("~/.staff/"+cfg_file)):
-    path=os.path.expanduser("~/.staff/")
+CFG_FILE = "staff.yaml"
+if os.path.isfile(CFG_FILE):
+    PATH = "./"
+elif os.path.isfile(os.path.expanduser("~/.staff/"+CFG_FILE)):
+    PATH = os.path.expanduser("~/.staff/")
 else:
     print("Can not load the staff.yaml.")
-    exit(0)
-cfg = yaml.safe_load(open(path+cfg_file))
+    sys.exit(0)
+cfg = yaml.safe_load(open(PATH+CFG_FILE))
 
 ##################
 # start flask app
@@ -23,7 +25,7 @@ cfg = yaml.safe_load(open(path+cfg_file))
 app = Flask(__name__)
 app.jinja_env.add_extension('jinja2.ext.i18n')
 gettext.install('lang', 'locale')
-lang = cfg['server'].get('lang',['en'])
+lang = cfg['server'].get('lang', ['en'])
 translations = gettext.translation('lang', 'locale', languages=lang)
 app.jinja_env.install_gettext_translations(translations)
 app.config.update(cfg)
@@ -31,7 +33,7 @@ app.config.update(cfg)
 #  mysql engine
 #################
 if cfg.get('db') is None:
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'+path+'/staff.db'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'+PATH+'/staff.db'
 elif cfg['db'].get('mysql') is not None:
     dbuser = cfg['db']['mysql'].get('user')
     dbpass = cfg['db']['mysql'].get('passwd')
@@ -44,11 +46,12 @@ db = SQLAlchemy(app)
 #  flask app
 #################
 
+
 @app.route('/')
 def mainpage():
-    return render_template('main.html',dataset={})
-@app.route('/entities')
-def entities():
-    return "Hello"
+    """ default endpoint """
+    return render_template('main.html', dataset={})
+
+
 import view
-app=view.registerRoute(app)
+app = view.registerRoute(app)
