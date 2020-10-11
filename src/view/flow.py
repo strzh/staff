@@ -133,5 +133,5 @@ class FlowView(MethodView):
         """ write to server """
         step = Flow.query.filter_by(id=f_id).first()
         if step is not None:
-            rs = step.syncToServers()
+            rs = step.sync_servers()
         return "ok"
