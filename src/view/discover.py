@@ -55,7 +55,7 @@ class NewDevice(MethodView):
         return render_template("discover_new.html", data=d_id)
 
     @staticmethod
-    def post():
+    def post(d_id):
         """  get new  """
         current_app.logger.debug(request.form)
         host = request.form.get("ips")

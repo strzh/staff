@@ -60,7 +60,13 @@ class File(db.Model):
         except paramiko.SSHException:
             current_app.logger.error("sftp failed")
             try:
-                dev.ssh.exec_command("cat > " + self.path + "<<EOF")
+                chan = dev.ssh.get_transport().open_session()
+                chan.exec_command("cat - > " + self.path + "")
+                sin = chan.makefile_stdin('wb',-1)
+                sin.write(self.text)
+                sin.flush()
+                sin.channel.shutdown_write()
+                #sin, sout, serr = dev.ssh.exec_command("echo  '"+self.text+"'> " + self.path )
             except paramiko.SSHException as e:
                 current_app.logger.error("command: {}".format(e))
         try:

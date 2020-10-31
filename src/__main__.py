@@ -2,6 +2,7 @@
 """  main standalone """
 import sys
 from app import app, cfg, db
+from broker import brokerServer
 
 if cfg.get("server") is None:
     print("Please config the port")

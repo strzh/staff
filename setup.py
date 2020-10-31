@@ -8,6 +8,7 @@ REQUIRES = [
     "paramiko",
     "flask_sqlalchemy",
     "PyYAML",
+    "hbmqtt",
 ]
 setup(
     name="managementtool",
